@@ -82,7 +82,7 @@ in-stock color, and reports whether normalization happened.
 
 ## Phase 2: Core vertical slice
 
-### [ ] Task 4 — Static product page
+### [x] Task 4 — Static product page
 
 **Description:** A server component at `/` that renders the product (title, price, fabric
 copy, and swatches as links) from `getProduct()`. No 3D and no client JS yet. Unknown
@@ -104,7 +104,7 @@ copy, and swatches as links) from `getProduct()`. No 3D and no client JS yet. Un
 
 ---
 
-### [ ] Task 5 — 3D viewer island
+### [x] Task 5 — 3D viewer island
 
 **Description:** `components/HijabViewer.tsx`, dynamically imported with `ssr: false`,
 mounted only when it enters the viewport. Loads a placeholder GLB, shows OrbitControls, and
@@ -127,7 +127,7 @@ renders one `Fabric` material at a fixed color. A skeleton shows until the model
 
 ---
 
-### [ ] Task 6 — Recolor + URL sync
+### [x] Task 6 — Recolor + URL sync
 
 **Description:** A client wrapper (`ProductView`) holds the selected color. `ColorPicker`
 renders swatches; selecting one calls `material.color.set(hex)`, updates the visible colour
@@ -149,7 +149,7 @@ name/price, and syncs the URL via `replaceState`. Initial color comes from `?col
 
 ---
 
-### [ ] Task 7 — WhatsApp order button
+### [x] Task 7 — WhatsApp order button
 
 **Description:** A pure `buildWhatsAppUrl({ site, product, color, qty, pageUrl })` producing
 the documented message and `wa.me` link, plus an `OrderButton` that uses it with the current
@@ -171,9 +171,9 @@ selection.
 ---
 
 #### Checkpoint: Core
-- [ ] End-to-end: open `/` → rotate → pick color → order link carries that color
-- [ ] Deep link `/?color=dusty-rose` opens with that color selected
-- [ ] Page renders and reads fully with JS disabled
+- [x] Order link in the served HTML carries the selected color + formatted price (headless verified)
+- [x] Product page prerenders static; GLB serves as `model/gltf-binary`; `three` confined to HijabViewer
+- [ ] Browser check: rotate + click-to-recolor + deep-link applied after hydration
 - [ ] Human review before Phase 3
 
 ---

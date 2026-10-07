@@ -25,7 +25,7 @@ const product = {
   fabric: 'Voal premium',
   care: 'Cuci tangan dengan air dingin, jangan diperas.',
   model: {
-    glbUrl: 'https://example.com/models/hijab.glb',
+    glbUrl: '/models/hijab.glb',
     fabricMaterialName: 'Fabric',
   },
   colors: [

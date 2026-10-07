@@ -35,7 +35,8 @@ export const product = defineType({
         defineField({
           name: 'glbUrl',
           title: 'GLB URL',
-          type: 'url',
+          type: 'string',
+          description: 'Absolute URL or root-relative path, e.g. /models/hijab.glb',
           validation: (rule) => rule.required(),
         }),
         defineField({

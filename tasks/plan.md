@@ -52,6 +52,22 @@ layers, each leaving the system working, rather than as parallel feature slices.
   env-reading config throws in the browser. Shared constants kill that class of bug and mean
   Vercel needs no Sanity env for Phase 1.
 
+### Deviations from this plan (Phase 2, recorded)
+
+- **Colour state lives in the URL, read via `useSyncExternalStore`** (`components/useCurrentUrl.ts`).
+  Cache Components refuses `searchParams`/`fetch` outside `<Suspense>`, and `setState` in an
+  effect is a lint error — this keeps the page fully static, ships the default colour in the
+  HTML, and applies a deep-linked colour on hydration. A bogus `?color=` renders the default
+  (the URL is normalised on the next selection, not immediately).
+- **`ProductInfo` folded into the client `ProductView`.** Client components still SSR, so the
+  served HTML is unchanged; one component owns the colour state instead of two.
+- **`getProduct`/`getSite` carry `"use cache"`** — required for a prerenderable `fetch` under
+  Cache Components.
+- **`model.glbUrl` is a `string`, not `url`** — so a root-relative `/models/hijab.glb` passes
+  Studio validation.
+- **The viewer mounts once on first intersection and stays mounted** (no unmount on
+  scroll-away): for a single-product page the reload cost outweighs the saved GPU time.
+
 ## Task List
 
 ### Phase 1: Foundation
