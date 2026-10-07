@@ -12,6 +12,13 @@ one tap into WhatsApp, prefilled. There is no runtime server, no database, and n
 the catalog is content, the product page is static HTML, and the only dynamic runtime is
 one lazy client island.
 
+## Project Facts
+
+- **Brand:** blabla hijab
+- **Currency:** IDR (Indonesian Rupiah)
+- **Accounts:** Vercel and Sanity projects already exist
+- **WhatsApp number:** pending (seed with a placeholder until provided)
+
 ## Locked Decisions
 
 | # | Decision | Choice |
@@ -314,9 +321,11 @@ base; UV-free (color is a material tint, not a texture); Y-up; ≤ 2 MB; meshopt
 
 ## 7. Open Questions
 
-- WhatsApp number / brand name / currency (needed before build).
-- Which model-sourcing route (§6) — deferred, placeholder unblocks development.
-- Hosting account (Vercel) and Sanity project — needed at first deploy.
+- **WhatsApp number** — pending; seed with a placeholder so Tasks 7/10 are unblocked, swap
+  the real number before launch.
+- ~~Brand name / currency~~ — resolved: *blabla hijab*, IDR.
+- ~~Vercel / Sanity accounts~~ — resolved: projects already exist.
+- **Model-sourcing route** (§6) — undecided; not a blocker (Task 5 uses the placeholder).
 
 ---
 
