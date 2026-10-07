@@ -1,19 +1,17 @@
 import { createClient } from '@sanity/client'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+import { apiVersion, dataset, projectId } from '../sanity/env.ts'
+
 const token = process.env.SANITY_API_TOKEN
 
-if (!projectId || !dataset || !token) {
-  throw new Error(
-    'Missing NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET or SANITY_API_TOKEN. Run with: pnpm seed',
-  )
+if (!token) {
+  throw new Error('Missing SANITY_API_TOKEN. Run with: pnpm seed')
 }
 
 const client = createClient({
   projectId,
   dataset,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION ?? '2026-10-07',
+  apiVersion,
   token,
   useCdn: false,
 })
