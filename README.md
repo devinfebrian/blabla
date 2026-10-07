@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# blabla hijab
 
-## Getting Started
+Single-product hijab store: a statically rendered product page with one lazily-loaded
+three.js viewer that rotates the hijab and recolours it across the store's real colours.
+Orders go out as a prefilled WhatsApp message. No server, database, auth, or payments in v1.
 
-First, run the development server:
+- Design: `docs/superpowers/specs/2026-10-07-hijab-3d-store-design.md`
+- Plan: `tasks/plan.md` · Task list: `tasks/todo.md`
+- Decisions: `docs/adr/`
+
+## Quickstart
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local   # then fill in the values
+pnpm seed                    # write the placeholder product + site into Sanity
+pnpm dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | What it does |
+| --- | --- |
+| `pnpm dev` | Next dev server |
+| `pnpm build` / `pnpm start` | production build / serve |
+| `pnpm lint` / `pnpm typecheck` | ESLint / `tsc` (typegen + noEmit) |
+| `pnpm test` / `pnpm test:watch` | Vitest unit + component tests |
+| `pnpm test:e2e` | Playwright (builds and serves the app itself) |
+| `pnpm seed` | write the placeholder product + site into Sanity (idempotent) |
+| `pnpm studio` | Sanity Studio (the editor) at http://localhost:3333 |
+| `pnpm studio:deploy` | publish the Studio to `<project>.sanity.studio` |
+| `node scripts/make-placeholder-model.mts` | regenerate `public/models/hijab.glb` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+The project id and dataset are **public constants** in `sanity/env.ts` — they appear in every
+Studio URL, and Sanity Studio runs on Vite, which never exposes Next's `NEXT_PUBLIC_*`. Only
+secrets live in env:
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Purpose |
+| --- | --- |
+| `SANITY_API_TOKEN` | Sanity write access, used by `pnpm seed` (local only) |
+| `SANITY_REVALIDATE_SECRET` | shared secret for the Sanity publish webhook → `POST /api/revalidate` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## The 3D asset contract
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Any model placed behind `product.model.glbUrl` must satisfy:
 
-## Deploy on Vercel
+- one `.glb`, Y-up, origin at centre, **≤ 2 MB**
+- **exactly one material named `Fabric`** (the name comes from `product.model.fabricMaterialName`)
+- its base colour must be **neutral white** — recolouring is `material.color.set(hex)` at
+  runtime, so a pre-tinted base makes every colour wrong
+- no baked texture (colour is a material tint, not a material map)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`public/models/hijab.glb` (9,896 bytes) is a placeholder that satisfies this. Regenerate it with
+`node scripts/make-placeholder-model.mts`. See `docs/adr/0001-3d-asset-contract.md`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Publishing changes
+
+Editing in the Studio does not touch the live page until the Sanity webhook calls
+`POST /api/revalidate?secret=…`. Without the webhook, `/` refreshes on its own 15-minute
+revalidation window.
+
+## Deployment
+
+Vercel. Set `SANITY_REVALIDATE_SECRET` in the project environment, then add a Sanity webhook
+(publish → `https://<domain>/api/revalidate?secret=…`).
+
+The Studio is not embedded in the Next app (Next 16 + Turbopack cannot bundle Sanity Studio's
+SWR dependency) — deploy it with `pnpm studio:deploy`.
