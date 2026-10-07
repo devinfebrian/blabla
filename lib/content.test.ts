@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn() }))
 
 vi.mock('./sanity', () => ({ client: { fetch: fetchMock } }))
+vi.mock('next/cache', () => ({ cacheTag: vi.fn(), cacheLife: vi.fn() }))
 
 import { getProduct, getSite } from './content'
 

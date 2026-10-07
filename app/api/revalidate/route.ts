@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 
 function isAuthorized(request: Request): boolean {
@@ -23,7 +23,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Invalid secret' }, { status: 401 })
   }
 
-  revalidatePath('/')
+  revalidateTag('product', { expire: 0 })
+  revalidateTag('site', { expire: 0 })
+  revalidatePath('/', 'layout')
 
   return NextResponse.json({ revalidated: true, at: Date.now() })
 }

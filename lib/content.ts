@@ -1,3 +1,5 @@
+import { cacheLife, cacheTag } from 'next/cache'
+
 import { client } from './sanity'
 import type { Product, Site } from './types'
 
@@ -21,6 +23,8 @@ const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug][0]{
 
 export async function getProduct(slug = 'hijab-premium'): Promise<Product> {
   'use cache'
+  cacheTag('product')
+  cacheLife('minutes')
 
   const product = await client.fetch<Product | null>(PRODUCT_QUERY, { slug })
 
@@ -39,6 +43,8 @@ const SITE_QUERY = `*[_type == "site"][0]{
 
 export async function getSite(): Promise<Site> {
   'use cache'
+  cacheTag('site')
+  cacheLife('minutes')
 
   const site = await client.fetch<Site | null>(SITE_QUERY)
 
