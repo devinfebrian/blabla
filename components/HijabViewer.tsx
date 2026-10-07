@@ -1,7 +1,7 @@
 'use client'
 
 import { OrbitControls, useGLTF } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import type { Mesh, MeshStandardMaterial } from 'three'
 
@@ -15,6 +15,7 @@ type ViewerProps = {
 
 function Model({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
   const { scene } = useGLTF(glbUrl)
+  const invalidate = useThree((state) => state.invalidate)
 
   useEffect(() => {
     scene.traverse((object) => {
@@ -28,9 +29,15 @@ function Model({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
         }
       }
     })
-  }, [scene, fabricMaterialName, hex])
+
+    invalidate()
+  }, [scene, fabricMaterialName, hex, invalidate])
 
   return <primitive object={scene} />
+}
+
+export function preloadModel(url: string) {
+  useGLTF.preload(url)
 }
 
 export function HijabViewer({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
@@ -44,7 +51,12 @@ export function HijabViewer({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
   return (
     <div className="aspect-square w-full overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900">
       <ViewerErrorBoundary onRetry={retry}>
-        <Canvas key={attempt} camera={{ position: [0, 0, 3.2], fov: 40 }} dpr={[1, 2]}>
+        <Canvas
+          key={attempt}
+          frameloop="demand"
+          dpr={[1, 2]}
+          camera={{ position: [0, 0, 3.2], fov: 40 }}
+        >
           <ambientLight intensity={1.1} />
           <directionalLight position={[3, 4, 5]} intensity={1.6} />
           <Suspense fallback={null}>

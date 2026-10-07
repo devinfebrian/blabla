@@ -202,7 +202,7 @@ unknown `?color=` normalizes silently; a Sanity failure at build fails loudly.
 
 ---
 
-### [ ] Task 9 — Performance pass
+### [x] Task 9 — Performance pass
 
 **Description:** Enforce the perf budget: `frameloop="demand"`, clamped `dpr`, preload the
 GLB on hover/tap intent, `next/image` for any photos, and confirm the catalog route ships

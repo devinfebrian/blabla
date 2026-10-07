@@ -8,6 +8,12 @@ const HijabViewer = dynamic(() => import('./HijabViewer').then((module) => modul
   ssr: false,
 })
 
+function preloadModel(glbUrl: string) {
+  void import('./HijabViewer')
+    .then((module) => module.preloadModel(glbUrl))
+    .catch(() => {})
+}
+
 function ViewerSkeleton() {
   return (
     <div
@@ -31,7 +37,12 @@ export function HijabViewerIsland({
   const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
-    <div ref={ref} className="w-full">
+    <div
+      ref={ref}
+      className="w-full"
+      onPointerEnter={() => preloadModel(glbUrl)}
+      onTouchStart={() => preloadModel(glbUrl)}
+    >
       {inView ? (
         <HijabViewer glbUrl={glbUrl} fabricMaterialName={fabricMaterialName} hex={hex} />
       ) : (

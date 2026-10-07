@@ -76,6 +76,15 @@ layers, each leaving the system working, rather than as parallel feature slices.
   `afterEach`, which this config doesn't enable. Both are now explicit so tests don't depend
   on the ambient shell.
 
+### Phase 3 measurements (Task 9)
+
+- Placeholder GLB: **9,896 bytes** (contract: ≤ 2 MB).
+- Lazy viewer chunk (three + R3F + drei, contains `OrbitControls`): **~1.0 MB uncompressed**,
+  loaded only when the viewer mounts — the page HTML does not block on it.
+- `frameloop="demand"` with explicit `invalidate()` after a colour change: no idle render loop.
+- **Not measured: LCP / INP on mid-range Android + 4G** — needs Lighthouse or a real device
+  (manual step, outstanding).
+
 ## Task List
 
 ### Phase 1: Foundation
