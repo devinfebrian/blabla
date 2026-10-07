@@ -34,6 +34,20 @@ layers, each leaving the system working, rather than as parallel feature slices.
 - **Order link is a pure function**, not an endpoint.
 - **No 3D fallback in v1** — deferred, recorded as a launch blocker (spec §1).
 
+### Deviations from this plan (Phase 1, recorded)
+
+- **Studio runs standalone, not embedded.** `pnpm studio` (→ `sanity dev`), deploy with
+  `sanity deploy`. Next 16 (Turbopack + Cache Components) cannot bundle Sanity Studio's SWR
+  dependency (`Export default doesn't exist in target module … swr/dist/index/react-server.mjs`);
+  forcing `serverExternalPackages: ['swr']` instead broke React context at build. Going
+  standalone also removed `next-sanity` and `@sanity/vision`.
+- **Schema lives in `sanity/schemaTypes/`** (Sanity's convention) rather than `sanity/schema/`.
+- **Added `styled-components`** — the Sanity CLI refuses to start the Studio without it.
+- **Seed uses Node's native TS support** (`node --env-file=.env.local scripts/seed.mts`) —
+  no `tsx`/`ts-node` dependency.
+- **`typecheck` runs `next typegen` first** — Next 16 generates the `LayoutProps` global only
+  via typegen, so a bare `tsc --noEmit` fails on the template's own code.
+
 ## Task List
 
 ### Phase 1: Foundation

@@ -8,7 +8,7 @@ Definition of Done (plan.md) are met.
 
 ## Phase 1: Foundation
 
-### [ ] Task 1 — Scaffold the app
+### [x] Task 1 — Scaffold the app
 
 **Description:** Bootstrap the Next.js (App Router) + TypeScript + Tailwind project with
 pnpm, ESLint/Prettier, and the test toolchains (Vitest + Playwright) wired to the repo
@@ -30,7 +30,7 @@ commands. No product features.
 
 ---
 
-### [ ] Task 2 — Sanity schema + seeded product
+### [x] Task 2 — Sanity schema + seeded product
 
 **Description:** Create the Sanity project and define the `product`, `colorVariant`, and
 `site` documents with validation. Seed one product with three color variants and the site's
@@ -52,7 +52,7 @@ WhatsApp number/brand/currency (placeholders acceptable).
 
 ---
 
-### [ ] Task 3 — Typed content layer + color normalization
+### [x] Task 3 — Typed content layer + color normalization
 
 **Description:** A `getProduct()` that runs the GROQ query and returns a typed `Product`.
 A pure `resolveColor(colors, key)` helper that returns the matching variant or the first
@@ -74,8 +74,8 @@ in-stock color, and reports whether normalization happened.
 ---
 
 #### Checkpoint: Foundation
-- [ ] `pnpm build` clean, `pnpm lint` clean, `pnpm test` green
-- [ ] Studio rejects invalid data; `getProduct()` works against real CMS data
+- [x] `pnpm build` clean, `pnpm lint` clean, `pnpm test` green
+- [x] Studio rejects invalid data; `getProduct()` works against real CMS data
 - [ ] Human review before Phase 2
 
 ---
