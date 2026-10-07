@@ -173,7 +173,7 @@ selection.
 #### Checkpoint: Core
 - [x] Order link in the served HTML carries the selected color + formatted price (headless verified)
 - [x] Product page prerenders static; GLB serves as `model/gltf-binary`; `three` confined to HijabViewer
-- [ ] Browser check: rotate + click-to-recolor + deep-link applied after hydration
+- [x] Browser check: rotate + click-to-recolor + deep-link applied after hydration (Playwright, 4 tests)
 - [ ] Human review before Phase 3
 
 ---
