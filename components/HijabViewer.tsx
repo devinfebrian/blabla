@@ -1,9 +1,10 @@
 'use client'
 
-import { OrbitControls, useGLTF } from '@react-three/drei'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import type { Mesh, MeshStandardMaterial } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { ViewerErrorBoundary } from './ViewerErrorBoundary'
 
@@ -14,11 +15,11 @@ type ViewerProps = {
 }
 
 function Model({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
-  const { scene } = useGLTF(glbUrl)
+  const gltf = useLoader(GLTFLoader, glbUrl)
   const invalidate = useThree((state) => state.invalidate)
 
   useEffect(() => {
-    scene.traverse((object) => {
+    gltf.scene.traverse((object) => {
       const mesh = object as Mesh
       if (!mesh.isMesh) return
 
@@ -31,20 +32,43 @@ function Model({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
     })
 
     invalidate()
-  }, [scene, fabricMaterialName, hex, invalidate])
+  }, [gltf, fabricMaterialName, hex, invalidate])
 
-  return <primitive object={scene} />
+  return <primitive object={gltf.scene} />
+}
+
+function Controls() {
+  const camera = useThree((state) => state.camera)
+  const renderer = useThree((state) => state.gl)
+  const invalidate = useThree((state) => state.invalidate)
+
+  useEffect(() => {
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enablePan = false
+    controls.minDistance = 1.8
+    controls.maxDistance = 5
+
+    const onChange = () => invalidate()
+    controls.addEventListener('change', onChange)
+
+    return () => {
+      controls.removeEventListener('change', onChange)
+      controls.dispose()
+    }
+  }, [camera, renderer, invalidate])
+
+  return null
 }
 
 export function preloadModel(url: string) {
-  useGLTF.preload(url)
+  void useLoader.preload(GLTFLoader, url)
 }
 
 export function HijabViewer({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
   const [attempt, setAttempt] = useState(0)
 
   const retry = useCallback(() => {
-    useGLTF.clear(glbUrl)
+    useLoader.clear(GLTFLoader, glbUrl)
     setAttempt((current) => current + 1)
   }, [glbUrl])
 
@@ -62,7 +86,7 @@ export function HijabViewer({ glbUrl, fabricMaterialName, hex }: ViewerProps) {
           <Suspense fallback={null}>
             <Model glbUrl={glbUrl} fabricMaterialName={fabricMaterialName} hex={hex} />
           </Suspense>
-          <OrbitControls enablePan={false} minDistance={1.8} maxDistance={5} />
+          <Controls />
         </Canvas>
       </ViewerErrorBoundary>
     </div>

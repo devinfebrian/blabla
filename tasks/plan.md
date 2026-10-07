@@ -79,11 +79,19 @@ layers, each leaving the system working, rather than as parallel feature slices.
 ### Phase 3 measurements (Task 9)
 
 - Placeholder GLB: **9,896 bytes** (contract: ≤ 2 MB).
-- Lazy viewer chunk (three + R3F + drei, contains `OrbitControls`): **~1.0 MB uncompressed**,
-  loaded only when the viewer mounts — the page HTML does not block on it.
+- Lazy viewer chunk (three + react-three-fiber, contains `OrbitControls`): **~980 KB
+  uncompressed / ~253 KB gzip**, loaded only when the viewer mounts — the page HTML does not
+  block on it.
 - `frameloop="demand"` with explicit `invalidate()` after a colour change: no idle render loop.
-- **Not measured: LCP / INP on mid-range Android + 4G** — needs Lighthouse or a real device
-  (manual step, outstanding).
+- **Lighthouse (deployed, mobile): Performance 60 · Accessibility 96 · Best Practices 100 ·
+  SEO 100.** Measured on the deploy with 4× CPU throttle + 4G emulation: LCP 3.7 s, TBT ≈ 1.1 s.
+  Cause: the ~250 KB **gzip** three.js chunk parsing/executing during load. three.js is the
+  floor — removing `@react-three/drei` only took the chunk 261 KB → 253 KB, so it was dropped
+  (one fewer dependency, marginal gain) but the cost remains.
+- **Open: Performance 60.** Deferring the viewer to idle was tried and did **not** help (it
+  moves the long task, it doesn't remove it). The only lever that clears mobile TBT is not
+  loading three.js during the initial load — i.e. gating the viewer behind a tap. Awaiting the
+  product call, because it changes the hero interaction.
 
 ### Task 10 outcome
 
