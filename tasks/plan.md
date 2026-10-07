@@ -47,6 +47,10 @@ layers, each leaving the system working, rather than as parallel feature slices.
   no `tsx`/`ts-node` dependency.
 - **`typecheck` runs `next typegen` first** — Next 16 generates the `LayoutProps` global only
   via typegen, so a bare `tsc --noEmit` fails on the template's own code.
+- **Project id/dataset are public constants in `sanity/env.ts`; only `SANITY_API_TOKEN` lives
+  in env.** Sanity Studio runs on Vite, which never exposes Next's `NEXT_PUBLIC_*`, so an
+  env-reading config throws in the browser. Shared constants kill that class of bug and mean
+  Vercel needs no Sanity env for Phase 1.
 
 ## Task List
 
