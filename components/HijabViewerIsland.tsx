@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic'
 
+import { trackViewerInteract } from '@/lib/analytics'
+
 import { useInView } from './useInView'
 
 const HijabViewer = dynamic(() => import('./HijabViewer').then((module) => module.HijabViewer), {
@@ -42,6 +44,7 @@ export function HijabViewerIsland({
       className="w-full"
       onPointerEnter={() => preloadModel(glbUrl)}
       onTouchStart={() => preloadModel(glbUrl)}
+      onPointerDown={() => trackViewerInteract()}
     >
       {inView ? (
         <HijabViewer glbUrl={glbUrl} fabricMaterialName={fabricMaterialName} hex={hex} />

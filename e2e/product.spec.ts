@@ -1,43 +1,56 @@
 import { expect, test } from '@playwright/test'
 
+// These tests must not depend on catalogue content (names, prices, colour count) — the
+// operator edits that in Sanity. They key off `data-key`, which is the stable ?color= value.
+
 test.describe('product page', () => {
   test('renders the product and mounts the 3D viewer', async ({ page }) => {
     await page.goto('/')
 
-    await expect(page.getByRole('heading', { name: 'Hijab Premium' })).toBeVisible()
-    await expect(page.getByText('189.000')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Pesan via WhatsApp' })).toBeVisible()
 
     await expect(page.locator('canvas')).toBeVisible({ timeout: 20_000 })
     await expect(page.getByTestId('viewer-skeleton')).toHaveCount(0)
   })
 
-  test('changing colour updates the URL, price, and order link', async ({ page }) => {
+  test('changing colour updates the URL, pressed state, and order link', async ({ page }) => {
     await page.goto('/')
 
-    await page.getByRole('button', { name: 'Navy' }).click()
+    const swatches = page.locator('button[data-key]')
+    expect(await swatches.count()).toBeGreaterThan(1)
 
-    await expect(page).toHaveURL(/\?color=navy$/)
-    await expect(page.getByText('199.000')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Navy' })).toHaveAttribute('aria-pressed', 'true')
+    const target = swatches.nth(1)
+    const targetKey = await target.getAttribute('data-key')
+    const targetName = await target.getAttribute('aria-label')
+
+    await expect(swatches.first()).toHaveAttribute('aria-pressed', 'true')
+    await target.click()
+
+    await expect(page).toHaveURL(new RegExp(`\\?color=${targetKey}$`))
+    await expect(target).toHaveAttribute('aria-pressed', 'true')
+    await expect(swatches.first()).toHaveAttribute('aria-pressed', 'false')
 
     const href = (await page.getByRole('link', { name: 'Pesan via WhatsApp' }).getAttribute('href')) ?? ''
     const message = decodeURIComponent(href)
-    expect(href).toContain('https://wa.me/6281234567890')
-    expect(message).toContain('Color: Navy')
-    expect(message).toContain('/?color=navy')
+    expect(href).toContain('https://wa.me/')
+    expect(message).toContain(`Color: ${targetName}`)
+    expect(message).toContain(`?color=${targetKey}`)
   })
 
   test('deep link selects the colour on load', async ({ page }) => {
-    await page.goto('/?color=black')
+    await page.goto('/')
+    const key = await page.locator('button[data-key]').nth(1).getAttribute('data-key')
 
-    await expect(page.getByRole('button', { name: 'Black' })).toHaveAttribute('aria-pressed', 'true')
-    await expect(page.getByText('189.000')).toBeVisible()
+    await page.goto(`/?color=${key}`)
+
+    await expect(page.locator(`button[data-key="${key}"]`)).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('unknown colour falls back to the default', async ({ page }) => {
-    await page.goto('/?color=nope')
+  test('unknown colour falls back to the first swatch', async ({ page }) => {
+    await page.goto('/?color=definitely-not-a-colour')
 
-    await expect(page.getByRole('button', { name: 'Dusty Rose' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('button[data-key]').first()).toHaveAttribute('aria-pressed', 'true')
   })
 
   test('shows an error with retry when the model fails to load', async ({ page }) => {
@@ -45,7 +58,7 @@ test.describe('product page', () => {
     await page.goto('/')
 
     await expect(page.getByTestId('viewer-error')).toBeVisible({ timeout: 20_000 })
-    await expect(page.getByRole('heading', { name: 'Hijab Premium' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
     await page.unroute('**/models/hijab.glb')
     await page.getByRole('button', { name: 'Coba lagi' }).click()

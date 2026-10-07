@@ -19,6 +19,7 @@ export function ColorPicker({
           <li key={variant.key}>
             <button
               type="button"
+              data-key={variant.key}
               onClick={() => onChange(variant.key)}
               disabled={!variant.inStock}
               aria-pressed={selected}

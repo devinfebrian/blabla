@@ -6,6 +6,7 @@ import { ColorPicker } from '@/components/ColorPicker'
 import { HijabViewerIsland } from '@/components/HijabViewerIsland'
 import { OrderButton } from '@/components/OrderButton'
 import { replaceColorInUrl, useCurrentUrl } from '@/components/useCurrentUrl'
+import { trackViewerInteract } from '@/lib/analytics'
 import { resolveColor } from '@/lib/color'
 import { formatPrice } from '@/lib/price'
 import type { Product, Site } from '@/lib/types'
@@ -38,7 +39,14 @@ export function ProductView({ product, site }: { product: Product; site: Site })
         </header>
 
         <div className="flex flex-col gap-3">
-          <ColorPicker colors={product.colors} value={color.key} onChange={replaceColorInUrl} />
+          <ColorPicker
+            colors={product.colors}
+            value={color.key}
+            onChange={(key) => {
+              replaceColorInUrl(key)
+              trackViewerInteract()
+            }}
+          />
           <p className="text-sm text-zinc-500">
             {color.name}
             {color.inStock ? '' : ' — stok habis'}
@@ -63,7 +71,7 @@ export function ProductView({ product, site }: { product: Product; site: Site })
           />
         </div>
 
-        <OrderButton href={orderHref} disabled={!color.inStock} />
+        <OrderButton href={orderHref} colorKey={color.key} disabled={!color.inStock} />
 
         {(product.fabric || product.care) && (
           <dl className="grid gap-2 text-sm text-zinc-600 dark:text-zinc-400">

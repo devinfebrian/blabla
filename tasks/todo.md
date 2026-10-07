@@ -224,7 +224,7 @@ no client JS. Record the numbers.
 
 ---
 
-### [ ] Task 10 — Deploy + revalidate webhook + analytics
+### [x] Task 10 — Deploy + revalidate webhook + analytics
 
 **Description:** Deploy to Vercel, add `/api/revalidate` called by a Sanity publish webhook
 to `revalidatePath('/')`, and enable analytics for the two PRD metrics.

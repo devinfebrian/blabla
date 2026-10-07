@@ -85,6 +85,18 @@ layers, each leaving the system working, rather than as parallel feature slices.
 - **Not measured: LCP / INP on mid-range Android + 4G** — needs Lighthouse or a real device
   (manual step, outstanding).
 
+### Task 10 outcome
+
+- **Publish → live works on the deploy** (the operator renamed a colour's key and name and it
+  propagated), so the webhook path is confirmed on Vercel.
+- Freshness is **bounded to 1 minute** (`cacheLife('minutes')`) with the webhook as the instant
+  path. Locally, `revalidateTag`/`revalidatePath` from a route handler did *not* reliably
+  refresh the prerendered page on repeat calls — the bound is what makes the guarantee.
+- Analytics events wired: `viewer_interact` (first rotate **or** colour change) and
+  `order_whatsapp` (with the colour key). The Vercel dashboard toggle still needs enabling.
+- E2E tests were rewritten to key off `button[data-key]` instead of catalogue names, so a
+  content edit in the Studio can no longer break them.
+
 ## Task List
 
 ### Phase 1: Foundation
