@@ -68,6 +68,14 @@ layers, each leaving the system working, rather than as parallel feature slices.
 - **The viewer mounts once on first intersection and stays mounted** (no unmount on
   scroll-away): for a single-product page the reload cost outweighs the saved GPU time.
 
+### Deviations from this plan (Phase 3, recorded)
+
+- **Vitest pins `NODE_ENV=test`** (`vitest.config.mts`) and runs explicit RTL `cleanup`
+  (`vitest.setup.ts`). This machine has a global `NODE_ENV=production`, which made React
+  resolve its production build and broke `React.act`; RTL's auto-cleanup also needs a global
+  `afterEach`, which this config doesn't enable. Both are now explicit so tests don't depend
+  on the ambient shell.
+
 ## Task List
 
 ### Phase 1: Foundation

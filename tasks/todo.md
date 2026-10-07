@@ -180,7 +180,7 @@ selection.
 
 ## Phase 3: Harden, perf, ship
 
-### [ ] Task 8 — Edge and error states
+### [x] Task 8 — Edge and error states
 
 **Description:** Handle the non-happy paths: GLB load failure shows an explicit error with
 retry (never a blank canvas); out-of-stock swatches and the order button are disabled;

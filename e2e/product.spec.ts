@@ -39,4 +39,18 @@ test.describe('product page', () => {
 
     await expect(page.getByRole('button', { name: 'Dusty Rose' })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  test('shows an error with retry when the model fails to load', async ({ page }) => {
+    await page.route('**/models/hijab.glb', (route) => route.fulfill({ status: 404, body: '' }))
+    await page.goto('/')
+
+    await expect(page.getByTestId('viewer-error')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByRole('heading', { name: 'Hijab Premium' })).toBeVisible()
+
+    await page.unroute('**/models/hijab.glb')
+    await page.getByRole('button', { name: 'Coba lagi' }).click()
+
+    await expect(page.locator('canvas')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByTestId('viewer-error')).toHaveCount(0)
+  })
 })
