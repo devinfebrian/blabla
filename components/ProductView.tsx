@@ -47,7 +47,7 @@ export function ProductView({ product, site }: { product: Product; site: Site })
               trackViewerInteract()
             }}
           />
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {color.name}
             {color.inStock ? '' : ' — stok habis'}
           </p>

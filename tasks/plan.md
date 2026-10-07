@@ -88,10 +88,13 @@ layers, each leaving the system working, rather than as parallel feature slices.
   Cause: the ~250 KB **gzip** three.js chunk parsing/executing during load. three.js is the
   floor — removing `@react-three/drei` only took the chunk 261 KB → 253 KB, so it was dropped
   (one fewer dependency, marginal gain) but the cost remains.
-- **Open: Performance 60.** Deferring the viewer to idle was tried and did **not** help (it
-  moves the long task, it doesn't remove it). The only lever that clears mobile TBT is not
-  loading three.js during the initial load — i.e. gating the viewer behind a tap. Awaiting the
-  product call, because it changes the hero interaction.
+- **Resolved: the viewer is tap-gated**, so three.js leaves the critical path entirely. Same
+  throttle, local: JS transferred **402 → 140 KB**, largest chunk **261 → 71 KB**, TBT
+  **843 → 257 ms**. `e2e/product.spec.ts` now also asserts that no JS chunk over 100 KB is
+  requested before the tap.
+- Accessibility fixes: the order button went `green-600 → green-700` (white-on-green-600 was
+  ~3.3:1) and secondary text `zinc-500 → zinc-600`. Lighthouse re-run on the deploy will
+  confirm both.
 
 ### Task 10 outcome
 

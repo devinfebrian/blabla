@@ -1,8 +1,12 @@
 # blabla hijab
 
-Single-product hijab store: a statically rendered product page with one lazily-loaded
-three.js viewer that rotates the hijab and recolours it across the store's real colours.
-Orders go out as a prefilled WhatsApp message. No server, database, auth, or payments in v1.
+Single-product hijab store: a statically rendered product page with a **tap-gated** three.js
+viewer that rotates the hijab and recolours it across the store's real colours. Orders go out
+as a prefilled WhatsApp message. No server, database, auth, or payments in v1.
+
+The viewer deliberately loads only when the shopper taps **Lihat dalam 3D** — three.js is
+~250 KB gzip, and loading it on arrival dominated mobile TBT (see the measurements in
+`tasks/plan.md`).
 
 - Design: `docs/superpowers/specs/2026-10-07-hijab-3d-store-design.md`
 - Plan: `tasks/plan.md` · Task list: `tasks/todo.md`

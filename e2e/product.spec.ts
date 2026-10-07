@@ -4,14 +4,26 @@ import { expect, test } from '@playwright/test'
 // operator edits that in Sanity. They key off `data-key`, which is the stable ?color= value.
 
 test.describe('product page', () => {
-  test('renders the product and mounts the 3D viewer', async ({ page }) => {
+  test('gates the 3D viewer behind a tap, then mounts it', async ({ page }) => {
     await page.goto('/')
 
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Pesan via WhatsApp' })).toBeVisible()
 
+    // three.js must stay off the critical path: no big JS chunk before the tap.
+    const heavyChunks = await page.evaluate(() => {
+      const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+      return entries
+        .filter((entry) => entry.name.endsWith('.js') && entry.transferSize > 100_000)
+        .map((entry) => entry.name)
+    })
+    expect(heavyChunks).toEqual([])
+    await expect(page.locator('canvas')).toHaveCount(0)
+
+    await page.getByRole('button', { name: 'Lihat dalam 3D' }).click()
+
     await expect(page.locator('canvas')).toBeVisible({ timeout: 20_000 })
-    await expect(page.getByTestId('viewer-skeleton')).toHaveCount(0)
+    await expect(page.getByTestId('viewer-poster')).toHaveCount(0)
   })
 
   test('changing colour updates the URL, pressed state, and order link', async ({ page }) => {
@@ -56,6 +68,7 @@ test.describe('product page', () => {
   test('shows an error with retry when the model fails to load', async ({ page }) => {
     await page.route('**/models/hijab.glb', (route) => route.fulfill({ status: 404, body: '' }))
     await page.goto('/')
+    await page.getByRole('button', { name: 'Lihat dalam 3D' }).click()
 
     await expect(page.getByTestId('viewer-error')).toBeVisible({ timeout: 20_000 })
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
