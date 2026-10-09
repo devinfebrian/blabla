@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "neon": {
+      "transport": "http",
+      "enabled": true,
+      "url": "https://mcp.neon.tech/mcp",
+      "oauth": {
+        "authorizationUrl": "https://mcp.neon.tech/api/authorize",
+        "tokenUrl": "https://mcp.neon.tech/api/token",
+        "clientId": "fBDs7DLi",
+        "scopes": [
+          "read",
+          "write"
+        ],
+        "resource": "https://mcp.neon.tech/mcp"
+      }
+    }
+  }
+}
