@@ -97,3 +97,67 @@ export async function getOrder(orderNumber: string): Promise<Order | null> {
     items: row.items,
   }
 }
+
+export type OrderSummary = {
+  orderNumber: string
+  status: string
+  customerName: string
+  itemCount: number
+  totalIdr: number
+  createdAt: string
+}
+
+export async function listOrders(status?: string): Promise<OrderSummary[]> {
+  const rows = await getDb().query(
+    `select o.order_number,
+            o.status,
+            o.customer->>'name' as customer_name,
+            o.total_idr,
+            o.created_at,
+            (select coalesce(sum(i.qty), 0) from order_items i where i.order_id = o.id)::int as item_count
+       from orders o
+      ${status ? 'where o.status = $1' : ''}
+      order by o.created_at desc
+      limit 200`,
+    status ? [status] : [],
+  )
+
+  return (rows as {
+    order_number: string
+    status: string
+    customer_name: string
+    item_count: number
+    total_idr: number
+    created_at: string
+  }[]).map((row) => ({
+    orderNumber: row.order_number,
+    status: row.status,
+    customerName: row.customer_name,
+    itemCount: Number(row.item_count),
+    totalIdr: Number(row.total_idr),
+    createdAt: row.created_at,
+  }))
+}
+
+export const ORDER_STATUSES = ['pending', 'paid', 'cancelled', 'failed'] as const
+
+export const ORDER_STATUS_LABELS: Record<string, string> = {
+  pending: 'Menunggu konfirmasi',
+  paid: 'Dibayar',
+  cancelled: 'Dibatalkan',
+  failed: 'Gagal',
+}
+
+export async function updateOrderStatus(orderNumber: string, status: string): Promise<void> {
+  if (!ORDER_STATUSES.includes(status as (typeof ORDER_STATUSES)[number])) {
+    throw new Error('Status pesanan tidak valid.')
+  }
+
+  await getDb().query(
+    `update orders
+        set status = $1,
+            paid_at = case when $1 = 'paid' then coalesce(paid_at, now()) else paid_at end
+      where order_number = $2`,
+    [status, orderNumber],
+  )
+}
