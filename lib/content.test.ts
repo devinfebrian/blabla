@@ -5,7 +5,7 @@ const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn() }))
 vi.mock('./sanity', () => ({ client: { fetch: fetchMock } }))
 vi.mock('next/cache', () => ({ cacheTag: vi.fn(), cacheLife: vi.fn() }))
 
-import { getProduct, getSite } from './content'
+import { getAllProducts, getProduct, getSite } from './content'
 
 describe('content failure paths (must fail loudly)', () => {
   it('throws when the product document is missing', async () => {
@@ -21,5 +21,10 @@ describe('content failure paths (must fail loudly)', () => {
   it('throws when the site document is missing', async () => {
     fetchMock.mockResolvedValueOnce(null)
     await expect(getSite()).rejects.toThrow(/No site document found/)
+  })
+
+  it('returns an empty catalogue instead of throwing', async () => {
+    fetchMock.mockResolvedValueOnce([])
+    await expect(getAllProducts()).resolves.toEqual([])
   })
 })

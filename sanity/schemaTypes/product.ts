@@ -28,6 +28,13 @@ export const product = defineType({
     defineField({ name: 'fabric', title: 'Fabric', type: 'string' }),
     defineField({ name: 'care', title: 'Care', type: 'text', rows: 2 }),
     defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      description: 'Shown on the catalogue grid.',
+      options: { hotspot: true },
+    }),
+    defineField({
       name: 'model',
       title: '3D model',
       type: 'object',

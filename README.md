@@ -45,6 +45,41 @@ secrets live in env:
 | --- | --- |
 | `SANITY_API_TOKEN` | Sanity write access, used by `pnpm seed` (local only) |
 | `SANITY_REVALIDATE_SECRET` | shared secret for the Sanity publish webhook → `POST /api/revalidate` |
+| `DATABASE_URL` | Neon pooled Postgres connection string — orders and stock (server-only) |
+
+## Store data (orders + stock)
+
+Products and prices live in Sanity; orders and stock live in Neon Postgres. The cart is
+**client-side** — `lib/cart-store.ts` keeps it in `localStorage`, and the server never sees it until
+checkout. The checkout action re-validates every line against Sanity (price, currency,
+availability), then the `create_order` SQL function writes the order and decrements stock in a
+single transaction. Customers confirm via the WhatsApp handoff on `/orders/[orderNumber]`; there is
+no payment provider.
+
+Link the project, then apply the schema to the branch:
+
+```bash
+neon link --project-id <project-id> --branch production -y   # writes .neon and pulls DATABASE_URL
+for f in db/migrations/*.sql; do                             # apply every migration, in order
+  neon psql production --role-name neondb_owner -- -f "$f"
+done
+```
+
+Stock lives in `variant_stock(product_slug, variant_key, on_hand)`, keyed the same way the cart and
+orders already identify a variant — so there are no SKUs to maintain in Sanity. A variant with no
+row is untracked and never blocks an order. `create_order` checks and decrements inside the order
+transaction and raises on oversell, so the database is the enforcement point; Sanity's `inStock`
+flag stays the coarse availability switch.
+
+The seeded quantities are **placeholders** — set the real ones:
+
+```sql
+insert into variant_stock (product_slug, variant_key, on_hand)
+values ('hijab-premium', 'dusty-rose', 25)
+on conflict (product_slug, variant_key) do update set on_hand = excluded.on_hand;
+```
+
+Checkout is IDR-only, so a variant priced in another currency can never be ordered.
 
 ## The 3D asset contract
 
@@ -67,8 +102,8 @@ revalidation window.
 
 ## Deployment
 
-Vercel. Set `SANITY_REVALIDATE_SECRET` in the project environment, then add a Sanity webhook
-(publish → `https://<domain>/api/revalidate?secret=…`).
+Vercel. Set `SANITY_REVALIDATE_SECRET` and `DATABASE_URL` in the project environment, then add a
+Sanity webhook (publish → `https://<domain>/api/revalidate?secret=…`).
 
 The Studio is not embedded in the Next app (Next 16 + Turbopack cannot bundle Sanity Studio's
 SWR dependency) — deploy it with `pnpm studio:deploy`.

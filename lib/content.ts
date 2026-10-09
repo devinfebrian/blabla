@@ -3,12 +3,12 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { client } from './sanity'
 import type { Product, Site } from './types'
 
-const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug][0]{
-  title,
+const PRODUCT_FIELDS = `title,
   "slug": slug.current,
   description,
   fabric,
   care,
+  "imageUrl": image.asset->url,
   model { glbUrl, fabricMaterialName },
   "colors": colors[]{
     key,
@@ -18,8 +18,13 @@ const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug][0]{
     currency,
     inStock,
     sku
-  }
-}`
+  }`
+
+const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug][0]{${PRODUCT_FIELDS}}`
+
+const PRODUCTS_BY_SLUGS_QUERY = `*[_type == "product" && slug.current in $slugs]{${PRODUCT_FIELDS}}`
+
+const ALL_PRODUCTS_QUERY = `*[_type == "product"] | order(title asc){${PRODUCT_FIELDS}}`
 
 export async function getProduct(slug = 'hijab-premium'): Promise<Product> {
   'use cache'
@@ -33,6 +38,24 @@ export async function getProduct(slug = 'hijab-premium'): Promise<Product> {
   }
 
   return product
+}
+
+export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
+  'use cache'
+  cacheTag('product')
+  cacheLife('minutes')
+
+  if (slugs.length === 0) return []
+
+  return client.fetch<Product[]>(PRODUCTS_BY_SLUGS_QUERY, { slugs })
+}
+
+export async function getAllProducts(): Promise<Product[]> {
+  'use cache'
+  cacheTag('product')
+  cacheLife('minutes')
+
+  return client.fetch<Product[]>(ALL_PRODUCTS_QUERY)
 }
 
 const SITE_QUERY = `*[_type == "site"][0]{

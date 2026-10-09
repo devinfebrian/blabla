@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildWhatsAppUrl } from './whatsapp'
+import { buildOrderHandoffUrl, buildWhatsAppUrl } from './whatsapp'
 
 const site = { whatsappNumber: '6281234567890' }
 const product = { title: 'Hijab Premium' }
@@ -29,5 +29,22 @@ describe('buildWhatsAppUrl', () => {
   it('formats the price for the currency', () => {
     const text = new URL(url).searchParams.get('text') ?? ''
     expect(text).toContain('199.000')
+  })
+})
+
+describe('buildOrderHandoffUrl', () => {
+  const handoff = buildOrderHandoffUrl({
+    site,
+    orderNumber: 'BLB-20261009-ABC123',
+    items: [{ name: 'Hijab Premium — Navy', qty: 2, priceIdr: 199000 }],
+    totalIdr: 398000,
+  })
+
+  it('names the order and totals it', () => {
+    const text = new URL(handoff).searchParams.get('text') ?? ''
+    expect(handoff.startsWith('https://wa.me/6281234567890?text=')).toBe(true)
+    expect(text).toContain('BLB-20261009-ABC123')
+    expect(text).toContain('Hijab Premium — Navy x2')
+    expect(text).toContain('398.000')
   })
 })

@@ -21,3 +21,28 @@ export function buildWhatsAppUrl({ site, product, color, qty, pageUrl }: OrderDe
 
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(message)}`
 }
+
+export type OrderHandoffDetails = {
+  site: Pick<Site, 'whatsappNumber'>
+  orderNumber: string
+  items: { name: string; qty: number; priceIdr: number }[]
+  totalIdr: number
+}
+
+export function buildOrderHandoffUrl({
+  site,
+  orderNumber,
+  items,
+  totalIdr,
+}: OrderHandoffDetails): string {
+  const message = [
+    `Halo! Saya baru saja membuat pesanan ${orderNumber}:`,
+    ...items.map(
+      (item) => `• ${item.name} x${item.qty} — ${formatPrice(item.priceIdr * item.qty, 'IDR')}`,
+    ),
+    `Total: ${formatPrice(totalIdr, 'IDR')}`,
+    'Mohon konfirmasi pembayarannya. Terima kasih!',
+  ].join('\n')
+
+  return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(message)}`
+}

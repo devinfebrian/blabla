@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { AddToCartButton } from '@/components/AddToCartButton'
 import { ColorPicker } from '@/components/ColorPicker'
 import { HijabViewerIsland } from '@/components/HijabViewerIsland'
 import { OrderButton } from '@/components/OrderButton'
@@ -71,7 +72,16 @@ export function ProductView({ product, site }: { product: Product; site: Site })
           />
         </div>
 
-        <OrderButton href={orderHref} colorKey={color.key} disabled={!color.inStock} />
+        <div className="flex flex-col gap-3">
+          <AddToCartButton
+            productSlug={product.slug}
+            productTitle={product.title}
+            color={color}
+            qty={qty}
+            disabled={!color.inStock}
+          />
+          <OrderButton href={orderHref} colorKey={color.key} disabled={!color.inStock} />
+        </div>
 
         {(product.fabric || product.care) && (
           <dl className="grid gap-2 text-sm text-zinc-600 dark:text-zinc-400">
