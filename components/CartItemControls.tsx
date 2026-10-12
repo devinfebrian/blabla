@@ -3,7 +3,7 @@
 import { removeCartLine, setCartQty } from '@/lib/cart-store'
 
 const STEP =
-  'inline-flex h-9 w-9 items-center justify-center text-lg leading-none transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800'
+  'inline-flex h-11 w-11 items-center justify-center text-lg leading-none transition-colors hover:bg-muted'
 
 export function CartItemControls({
   productSlug,
@@ -16,7 +16,7 @@ export function CartItemControls({
 }) {
   return (
     <div className="flex items-center gap-4">
-      <div className="flex items-center rounded-full border border-zinc-300 dark:border-zinc-700">
+      <div className="flex items-center rounded-[3px] border border-border">
         <button
           type="button"
           aria-label="Kurangi jumlah"
@@ -38,7 +38,7 @@ export function CartItemControls({
       <button
         type="button"
         onClick={() => removeCartLine(productSlug, variantKey)}
-        className="text-sm text-zinc-500 underline transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+        className="text-[0.6875rem] tracking-[0.015em] text-muted-foreground uppercase underline transition-colors hover:text-foreground"
       >
         Hapus
       </button>

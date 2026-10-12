@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { ProductView } from '@/components/ProductView'
-import { getAllProducts, getProductsBySlugs, getSite } from '@/lib/content'
+import { ProductDetailOne } from '@/components/product-detail-01'
+import { getAllProducts, getProductsBySlugs } from '@/lib/content'
 
 export async function generateStaticParams() {
   const products = await getAllProducts()
@@ -11,28 +11,29 @@ export async function generateStaticParams() {
 
 async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const [products, site] = await Promise.all([getProductsBySlugs([slug]), getSite()])
+  const products = await getProductsBySlugs([slug])
   const product = products[0]
 
   if (!product) notFound()
 
-  return <ProductView product={product} site={site} />
+  return <ProductDetailOne product={product} />
 }
 
 export default function ProductPage({ params }: PageProps<'/products/[slug]'>) {
   return (
-    <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
-      <main className="flex w-full max-w-2xl flex-col gap-8 px-6 py-12 sm:py-20">
-        <Suspense
-          fallback={
-            <p data-testid="product-loading" className="text-zinc-600 dark:text-zinc-400">
-              Memuat produk…
-            </p>
-          }
-        >
-          <ProductDetail params={params} />
-        </Suspense>
-      </main>
-    </div>
+    <main className="flex flex-1 flex-col">
+      <Suspense
+        fallback={
+          <p
+            data-testid="product-loading"
+            className="mx-auto w-full max-w-[1440px] px-4 py-8 text-xs text-muted-foreground sm:px-6"
+          >
+            Memuat produk…
+          </p>
+        }
+      >
+        <ProductDetail params={params} />
+      </Suspense>
+    </main>
   )
 }

@@ -1,4 +1,5 @@
 import { ProductCard } from '@/components/ProductCard'
+import { Container } from '@/components/ui/Container'
 import { getAllProducts } from '@/lib/content'
 
 export const metadata = { title: 'Koleksi — blabla hijab' }
@@ -7,20 +8,22 @@ export default async function ProductsPage() {
   const products = await getAllProducts()
 
   return (
-    <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
-      <main className="flex w-full max-w-2xl flex-col gap-8 px-6 py-12 sm:py-20">
-        <h1 className="text-3xl font-semibold tracking-tight">Koleksi</h1>
+    <main className="flex flex-1 flex-col">
+      <Container className="py-8 sm:py-12">
+        <h1 className="text-h1 font-bold tracking-[-0.27px] uppercase">
+          Koleksi <span className="tabular-nums">[{products.length}]</span>
+        </h1>
 
         {products.length === 0 ? (
-          <p className="text-zinc-600 dark:text-zinc-400">Belum ada produk.</p>
+          <p className="mt-6 text-xs text-muted-foreground">Belum ada produk.</p>
         ) : (
-          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <ul className="mt-6 grid grid-cols-2 gap-[3px] md:grid-cols-3 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
           </ul>
         )}
-      </main>
-    </div>
+      </Container>
+    </main>
   )
 }

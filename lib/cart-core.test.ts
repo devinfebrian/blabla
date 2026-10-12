@@ -16,7 +16,6 @@ const product: Product = {
   title: 'Hijab Premium',
   slug: 'hijab-premium',
   description: 'Satu model, banyak warna.',
-  model: { glbUrl: '/models/hijab.glb', fabricMaterialName: 'Fabric' },
   colors: [
     { key: 'navy', name: 'Navy', hex: '#1B2A4A', price: 199000, currency: 'IDR', inStock: true, sku: 'HJ-NVY' },
     { key: 'rose', name: 'Dusty Rose', hex: '#C98B8B', price: 189000, currency: 'IDR', inStock: false },

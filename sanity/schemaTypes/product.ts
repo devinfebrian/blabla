@@ -35,27 +35,6 @@ export const product = defineType({
       options: { hotspot: true },
     }),
     defineField({
-      name: 'model',
-      title: '3D model',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'glbUrl',
-          title: 'GLB URL',
-          type: 'string',
-          description: 'Absolute URL or root-relative path, e.g. /models/hijab.glb',
-          validation: (rule) => rule.required(),
-        }),
-        defineField({
-          name: 'fabricMaterialName',
-          title: 'Fabric material name',
-          type: 'string',
-          initialValue: 'Fabric',
-          validation: (rule) => rule.required(),
-        }),
-      ],
-    }),
-    defineField({
       name: 'colors',
       title: 'Colors',
       type: 'array',

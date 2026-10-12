@@ -25,12 +25,12 @@ export function ColorPicker({
               aria-pressed={selected}
               aria-label={variant.name}
               title={variant.name}
-              className={`block h-10 w-10 rounded-full border-2 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                selected ? 'border-zinc-900 dark:border-zinc-100' : 'border-transparent'
+              className={`block h-11 w-11 rounded-[3px] border transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                selected ? 'border-foreground' : 'border-border hover:border-foreground/60'
               }`}
             >
               <span
-                className="block h-full w-full rounded-full"
+                className="block h-full w-full rounded-[3px]"
                 style={{ backgroundColor: variant.hex }}
                 aria-hidden
               />

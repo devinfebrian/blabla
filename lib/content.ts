@@ -9,7 +9,6 @@ const PRODUCT_FIELDS = `title,
   fabric,
   care,
   "imageUrl": image.asset->url,
-  model { glbUrl, fabricMaterialName },
   "colors": colors[]{
     key,
     name,
@@ -17,7 +16,8 @@ const PRODUCT_FIELDS = `title,
     price,
     currency,
     inStock,
-    sku
+    sku,
+    "images": images[].asset->url
   }`
 
 const PRODUCT_QUERY = `*[_type == "product" && slug.current == $slug][0]{${PRODUCT_FIELDS}}`

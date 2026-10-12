@@ -9,6 +9,10 @@ const STORAGE_KEY = 'blabla-cart'
 let lines: CartLine[] | null = null
 const listeners = new Set<() => void>()
 
+// Stable identity: useSyncExternalStore requires a cached server snapshot, otherwise it loops.
+const EMPTY_LINES: CartLine[] = []
+const getServerSnapshot = (): CartLine[] => EMPTY_LINES
+
 function isCartLine(value: unknown): value is CartLine {
   if (typeof value !== 'object' || value === null) return false
 
@@ -60,7 +64,7 @@ export function getCartLines(): CartLine[] {
 }
 
 export function useCart(): CartLine[] {
-  return useSyncExternalStore(subscribe, read, () => [])
+  return useSyncExternalStore(subscribe, read, getServerSnapshot)
 }
 
 export function addCartLine(line: CartLine): void {
