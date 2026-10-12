@@ -1,16 +1,10 @@
 # blabla hijab
 
-Single-product hijab store: a statically rendered product page with a **tap-gated** three.js
-viewer that rotates the hijab and recolours it across the store's real colours. Orders go out
-as a prefilled WhatsApp message. No server, database, auth, or payments in v1.
+Single-product hijab store: a statically rendered product page with a per-colour photo gallery,
+a colour-variant picker, and a WhatsApp checkout. Orders go out as a prefilled WhatsApp message.
+No server, database, auth, or payments in v1.
 
-The viewer deliberately loads only when the shopper taps **Lihat dalam 3D** — three.js is
-~250 KB gzip, and loading it on arrival dominated mobile TBT (see the measurements in
-`tasks/plan.md`).
-
-- Design: `docs/superpowers/specs/2026-10-07-hijab-3d-store-design.md`
 - Plan: `tasks/plan.md` · Task list: `tasks/todo.md`
-- Decisions: `docs/adr/`
 
 ## Quickstart
 
@@ -33,7 +27,6 @@ pnpm dev                     # http://localhost:3000
 | `pnpm seed` | write the placeholder product + site into Sanity (idempotent) |
 | `pnpm studio` | Sanity Studio (the editor) at http://localhost:3333 |
 | `pnpm studio:deploy` | publish the Studio to `<project>.sanity.studio` |
-| `node scripts/make-placeholder-model.mts` | regenerate `public/models/hijab.glb` |
 
 ## Environment
 
@@ -81,18 +74,18 @@ on conflict (product_slug, variant_key) do update set on_hand = excluded.on_hand
 
 Checkout is IDR-only, so a variant priced in another currency can never be ordered.
 
-## The 3D asset contract
+## Product images
 
-Any model placed behind `product.model.glbUrl` must satisfy:
+Product photos live in Sanity, not in the repo. The product has one catalogue `image`; each colour
+variant has an `images[]` gallery. On the product page the selected colour's images are shown in a
+gallery with thumbnails, falling back to the product image — and to a colour swatch when nothing
+has been uploaded yet.
 
-- one `.glb`, Y-up, origin at centre, **≤ 2 MB**
-- **exactly one material named `Fabric`** (the name comes from `product.model.fabricMaterialName`)
-- its base colour must be **neutral white** — recolouring is `material.color.set(hex)` at
-  runtime, so a pre-tinted base makes every colour wrong
-- no baked texture (colour is a material tint, not a material map)
+- `product.image` — shown on the catalogue grid and as the gallery fallback
+- `colorVariant.images[]` — the gallery for that colour (main image + thumbnails)
 
-`public/models/hijab.glb` (9,896 bytes) is a placeholder that satisfies this. Regenerate it with
-`node scripts/make-placeholder-model.mts`. See `docs/adr/0001-3d-asset-contract.md`.
+Upload them in the Studio (`pnpm studio`). Images are served from `cdn.sanity.io`, which is already
+allow-listed in `next.config.ts`.
 
 ## Publishing changes
 

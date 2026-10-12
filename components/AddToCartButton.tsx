@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { Button } from '@/components/ui/button'
 import { trackAddToCart } from '@/lib/analytics'
 import { addCartLine } from '@/lib/cart-store'
 import type { ColorVariant } from '@/lib/types'
@@ -41,18 +42,13 @@ export function AddToCartButton({
 
   return (
     <div className="flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={add}
-        disabled={disabled}
-        className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-6 font-medium text-white transition-colors hover:bg-zinc-700 disabled:bg-zinc-400 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white dark:disabled:bg-zinc-600"
-      >
-        Tambah ke keranjang
-      </button>
+      <Button type="button" size="lg" onClick={add} disabled={disabled}>
+        Tambah ke keranjang <span aria-hidden>→</span>
+      </Button>
       {added && (
-        <p role="status" className="text-sm text-green-700 dark:text-green-500">
+        <p role="status" className="text-[0.6875rem] tracking-[0.015em] text-muted-foreground uppercase">
           Ditambahkan ke keranjang.{' '}
-          <Link href="/cart" className="underline">
+          <Link href="/cart" className="text-foreground underline">
             Lihat keranjang
           </Link>
         </p>

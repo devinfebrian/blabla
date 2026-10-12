@@ -6,6 +6,7 @@ export type ColorVariant = {
   currency: string
   inStock: boolean
   sku?: string
+  images?: string[]
 }
 
 export type Product = {
@@ -15,7 +16,6 @@ export type Product = {
   fabric?: string
   care?: string
   imageUrl?: string
-  model: { glbUrl: string; fabricMaterialName: string }
   colors: ColorVariant[]
 }
 

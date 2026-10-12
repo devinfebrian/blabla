@@ -1,17 +1,18 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition, type FormEvent } from 'react'
 
 import { checkoutAction } from '@/app/actions/checkout'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
 import { trackBeginCheckout, trackOrderCreated } from '@/lib/analytics'
 import { lineKey, summarize } from '@/lib/cart-core'
 import { clearCart, useCart } from '@/lib/cart-store'
 import { formatPrice } from '@/lib/price'
-
-const FIELD =
-  'w-full rounded-lg border border-zinc-300 px-3 text-sm outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-zinc-100'
 
 export function CheckoutForm() {
   const lines = useCart()
@@ -53,73 +54,64 @@ export function CheckoutForm() {
 
   if (cart.lines.length === 0) {
     return (
-      <p data-testid="checkout-empty" className="text-zinc-600 dark:text-zinc-400">
-        Keranjang masih kosong.{' '}
-        <Link href="/products" className="underline">
-          Lihat koleksi
-        </Link>
+      <p data-testid="checkout-empty" className="text-xs text-muted-foreground">
+        Keranjang masih kosong.
       </p>
     )
   }
 
   return (
     <div className="flex flex-col gap-8">
-      <ul className="flex flex-col gap-2 text-sm">
+      <ul className="flex flex-col gap-2 text-xs">
         {cart.lines.map((line) => (
           <li key={lineKey(line)} className="flex justify-between gap-4">
-            <span>
+            <span className="text-muted-foreground">
               {line.productTitle} — {line.variantName} × {line.qty}
             </span>
             <span className="tabular-nums">{formatPrice(line.lineTotalIdr, 'IDR')}</span>
           </li>
         ))}
-        <li className="flex justify-between gap-4 border-t border-zinc-200 pt-2 font-medium dark:border-zinc-800">
-          <span>Total</span>
-          <span data-testid="checkout-total" className="tabular-nums">
-            {formatPrice(cart.subtotalIdr, 'IDR')}
-          </span>
-        </li>
       </ul>
 
+      <Separator />
+
+      <div className="flex justify-between gap-4 text-[0.6875rem] tracking-[0.015em] uppercase">
+        <span>Total</span>
+        <span data-testid="checkout-total" className="tabular-nums">
+          {formatPrice(cart.subtotalIdr, 'IDR')}
+        </span>
+      </div>
+
       <form onSubmit={submit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="name" className="text-sm">
-            Nama
-          </label>
-          <input id="name" name="name" required className={`${FIELD} h-12`} />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Nama</Label>
+          <Input id="name" name="name" required />
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="phone" className="text-sm">
-            Nomor WhatsApp
-          </label>
-          <input id="phone" name="phone" type="tel" required className={`${FIELD} h-12`} />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="phone">Nomor WhatsApp</Label>
+          <Input id="phone" name="phone" type="tel" required />
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="email" className="text-sm">
-            Email (opsional)
-          </label>
-          <input id="email" name="email" type="email" className={`${FIELD} h-12`} />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email">Email (opsional)</Label>
+          <Input id="email" name="email" type="email" />
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="address" className="text-sm">
-            Alamat pengiriman
-          </label>
-          <textarea id="address" name="address" required rows={3} className={`${FIELD} py-2`} />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="address">Alamat pengiriman</Label>
+          <Textarea id="address" name="address" required rows={3} />
         </div>
 
         {error && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p
+            role="alert"
+            className="text-[0.6875rem] tracking-[0.015em] text-destructive uppercase"
+          >
             {error}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-6 font-medium text-white transition-colors hover:bg-zinc-700 disabled:bg-zinc-400 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white dark:disabled:bg-zinc-600"
-        >
+        <Button type="submit" size="lg" disabled={pending}>
           {pending ? 'Memproses…' : 'Buat pesanan'}
-        </button>
+        </Button>
       </form>
     </div>
   )

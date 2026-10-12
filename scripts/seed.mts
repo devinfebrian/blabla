@@ -21,13 +21,9 @@ const product = {
   _type: 'product',
   title: 'Hijab Premium',
   slug: { _type: 'slug', current: 'hijab-premium' },
-  description: 'Satu model tiga dimensi, banyak pilihan warna.',
+  description: 'Hijab premium dengan bahan voal yang lembut, tersedia dalam berbagai pilihan warna.',
   fabric: 'Voal premium',
   care: 'Cuci tangan dengan air dingin, jangan diperas.',
-  model: {
-    glbUrl: '/models/hijab.glb',
-    fabricMaterialName: 'Fabric',
-  },
   colors: [
     { _key: 'dusty-rose', _type: 'colorVariant', key: 'dusty-rose', name: 'Dusty Rose', hex: '#C98B8B', price: 189000, currency: 'IDR', inStock: true },
     { _key: 'black', _type: 'colorVariant', key: 'black', name: 'Black', hex: '#111111', price: 189000, currency: 'IDR', inStock: true },
